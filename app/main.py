@@ -12,22 +12,15 @@ from fastapi import (
 )  # here  FastAPI is the main class in fastapi and is the entry point .
 from psycopg2.extras import DictCursor
 
-# from fastapi.params import Body
-from pydantic import BaseModel
+from fastapi.params import Body
 from sqlalchemy.orm import Session
 
-from . import models
+from . import models ,schemas
 from .database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
-
-class Post(BaseModel):
-    title: str
-    content: str
-    published: bool = True  # if the user dosent provide a value it default prints True
 
 
 # while True:
@@ -77,13 +70,6 @@ def root():
     return {"message": "hey there buddy"}
 
 
-@app.get("/sqlalchemy")
-def test_posts(db: Session = Depends(get_db)):
-    # this is for orm testing 
-    posts = db.query(models.Post).all() # returing all the posts form the poosts table 
-    return {"status": posts}
-
-
 @app.get("/posts")
 def get_posts():
     cursor.execute("SELECT * FROM posts")
@@ -92,7 +78,7 @@ def get_posts():
 
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def creat_post(post: Post,db: Session = Depends(get_db)):
+def creat_post(post: schemas.PostCreate,db: Session = Depends(get_db)):
     #cursor.execute(
     #    "INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *",
     #    (post.title, post.content, post.published),
@@ -167,7 +153,7 @@ def delete_post(id: int, db : Session = Depends(get_db)):
 #     return {"data": post_query.first()}
 
 @app.put("/posts/{id}")
-def update_post(id: int, post: Post, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
 
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
