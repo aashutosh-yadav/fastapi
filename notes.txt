@@ -1,0 +1,62 @@
+FastAPI class and its instance
+return message json
+return is python dict
+decorators
+json data
+the return response should always be in dictionray , because fastapi automatically converts it into dict so its a best practice and readable .
+what are crud applications?
+@app.get("/url/{id}")  -> study this in depth not fully understood
+
+when ever you save an info in a database it will create a unique id
+path operation function
+order of the api matters
+
+## Things to study properly
+
+  HTTPException class
+  response class
+  status code
+  fastapi
+
+## reading datatypes from postgress
+
+different types of integers in postgress
+
+anytime we want to make changes to data we use  conn.commit()
+
+# orm actually sits in between the database and the application
+    so it we talk to orm and the orm talks to the database
+
+# without orm
+    fastapi -> sql -> database
+
+# whith orm
+    fastapi -> orm(psycopg2 , sql) -> database
+
+what is sqlalchemy session ?
+    think of it like a workspace/transaction manager
+    Your Python code
+       ↓
+    Session
+       ↓
+   Database
+   The session:
+
+    sends queries
+    tracks changes
+    stores temporary objects
+    commits data
+    rolls back errors
+    manages transactions
+
+what is a engine ?
+
+sqlalchemy engine doest not support database migrations
+alembic
+
+db: Session = Depends(get_db) -> this is the most imp path operation function
+
+ineficieny in models 
+
+
+what is the difference in pydantic and orm models 
