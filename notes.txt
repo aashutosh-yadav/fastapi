@@ -56,7 +56,10 @@ alembic
 
 db: Session = Depends(get_db) -> this is the most imp path operation function
 
-ineficieny in models 
+ineficieny in models
 
 
-what is the difference in pydantic and orm models 
+what is the difference in pydantic and orm models
+how are ids in postgress generated because some of them are there and some are not  there .
+
+response_model=schemas.UserOUt -> this is a very important field (also check the schemas for it )
