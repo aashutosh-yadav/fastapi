@@ -1,4 +1,6 @@
+# all of the things here are type anotations and not variables 
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel
 from pydantic.networks import EmailStr
@@ -35,3 +37,10 @@ class UserOUt(BaseModel):
 class UserLogin(BaseModel): 
     email : EmailStr
     password : str
+
+class Token(BaseModel):
+    access_token : str
+    token_type : str
+
+class TokenData(BaseModel): 
+    id : int

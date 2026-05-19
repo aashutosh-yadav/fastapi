@@ -12,30 +12,34 @@ from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 from sqlalchemy.util.deprecations import deprecated
 
-from .. import models, schemas
+from app import oauth2
+
+from .. import models, schemas , oauth2
 from ..database import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
-router = APIRouter(prefix="/post", tags=["Posts"])
+router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get("/", response_model=List[schemas.Post])
-def get_posts(db: Session = Depends(get_db)):
+def get_posts(db: Session = Depends(get_db) , current_user : int = Depends(oauth2.get_current_user)):
     # cursor.execute("SELECT * FROM posts")
     # posts = cursor.fetchall()
     posts = db.query(models.Post).all()
     return posts
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-def creat_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
+
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.Post)
+def creat_post(post: schemas.PostCreate, db: Session = Depends(get_db) , current_user : int = Depends(oauth2.get_current_user)):
     # cursor.execute(
     #    "INSERT INTO posts (title, content, published) VALUES (%s, %s, %s) RETURNING *",
     #    (post.title, post.content, post.published),
     # )
     # new_post = cursor.fetchone()
     # conn.commit()
+    print(current_user.email)
     new_post = models.Post(  # -> this is for efficiency
         **post.model_dump()
     )
@@ -43,7 +47,7 @@ def creat_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
     db.add(new_post)  # add it to the database
     db.commit()  # commit the changes
     db.refresh(new_post)  # retrive the data  and strore is in the new variable new_post
-    return {"data": new_post}
+    return new_post
 
 
 # def creat_post(payload : dict = Body(...)):
@@ -53,8 +57,8 @@ def creat_post(post: schemas.PostCreate, db: Session = Depends(get_db)):
 #         }
 
 
-@router.get("/{id}")  # path parameter
-def get_post(id: int, db: Session = Depends(get_db)):
+@router.get("/{id}" , response_model=schemas.Post)  # path parameter
+def get_post(id: int, db: Session = Depends(get_db) , current_user : int = Depends(oauth2.get_current_user)):
     # cursor.execute("SELECT * FROM posts WHERE id = %s", (id,))
     # post = cursor.fetchone()
     post = db.query(models.Post).filter(models.Post.id == id).first()
@@ -70,7 +74,7 @@ def get_post(id: int, db: Session = Depends(get_db)):
 
 # delete method
 @router.delete("/{id}", status_code=status.HTTP_200_OK)
-def delete_post(id: int, db: Session = Depends(get_db)):
+def delete_post(id: int, db: Session = Depends(get_db) , current_user : int = Depends(oauth2.get_current_user)):
     # cursor.execute("DELETE FROM posts WHERE id = %s RETURNING *", (id,))
     # post = cursor.fetchone()
     # conn.commit()
@@ -106,7 +110,7 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{id}")
-def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db)):
+def update_post(id: int, post: schemas.PostCreate, db: Session = Depends(get_db) , current_user : int = Depends(oauth2.get_current_user)):
 
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
