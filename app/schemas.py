@@ -1,4 +1,4 @@
-# all of the things here are type anotations and not variables 
+# all of the things here are type anotations and not variables
 from datetime import datetime
 from typing import Optional
 
@@ -16,9 +16,17 @@ class PostCreate(PostBase):
     pass
 
 
+class UserOUt(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: datetime
+
+
 class Post(PostBase):
     id: int
     created_at: datetime
+    owner_id: int
+    owner: UserOUt
 
     class congif:
         orm_mode = True
@@ -29,18 +37,15 @@ class CreateUser(BaseModel):
     password: str
 
 
-class UserOUt(BaseModel):
-    id: int
+class UserLogin(BaseModel):
     email: EmailStr
-    created_at: datetime
+    password: str
 
-class UserLogin(BaseModel): 
-    email : EmailStr
-    password : str
 
 class Token(BaseModel):
-    access_token : str
-    token_type : str
+    access_token: str
+    token_type: str
 
-class TokenData(BaseModel): 
-    id : int
+
+class TokenData(BaseModel):
+    id: int
