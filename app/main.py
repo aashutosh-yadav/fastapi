@@ -1,20 +1,8 @@
-#import time
-
-# from random import randrange
-#from typing import List, Optional
-
-# import psycopg2
 from fastapi import FastAPI
-#from fastapi.params import Body
-#from passlib.context import CryptContext
-#from psycopg2.extras import DictCursor
-#from sqlalchemy.orm import Session
-#from sqlalchemy.util.deprecations import deprecated
-
-#from .database import engine, get_db
 from .routers import post, user , auth
 
 app = FastAPI()
+
 # while True:
 #     try:
 #         conn = psycopg2.connect(
@@ -33,27 +21,27 @@ app = FastAPI()
 #
 
 # temporary database
-# this can be converted to hashtable for efficient searching algo
-my_posts = [
-    {"title": "title of post 1", "content": "content of post 1", "id": 1},
-    {"title": "favorite foos", "content": "I like pizza", "id": 2},
-]
+# # this can be converted to hashtable for efficient searching algo
+# my_posts = [
+#     {"title": "title of post 1", "content": "content of post 1", "id": 1},
+#     {"title": "favorite foos", "content": "I like pizza", "id": 2},
+# ]
 
 
 # to find a specific post
 # we can optimize this with optimal search algo
-def find_post(id):
-    for i, p in enumerate(my_posts):
-        if p["id"] == id:
-            return i
-
-
-def delete_pt(id):
-    for p in my_posts:
-        if p["id"] == id:
-            my_posts.remove(p)
-            return p
-    return None
+# def find_post(id):
+#     for i, p in enumerate(my_posts):
+#         if p["id"] == id:
+#             return i
+#
+#
+# def delete_pt(id):
+#     for p in my_posts:
+#         if p["id"] == id:
+#             my_posts.remove(p)
+#             return p
+#     return None
 
 
 app.include_router(post.router)
