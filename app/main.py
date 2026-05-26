@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import database
 
@@ -6,6 +7,16 @@ from .routers import auth, post, user, vote
 
 app = FastAPI()
 
+# this tells which origins can talk to my api
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # which origins are allowed
+    allow_credentials=True,
+    allow_methods=["*"],  # which methods are allowed
+    allow_headers=["*"],  # which headers are allowed
+)
 # while True:
 #     try:
 #         conn = psycopg2.connect(
