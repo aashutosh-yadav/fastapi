@@ -9,6 +9,7 @@ from fastapi import (
     status,  # here  FastAPI is the main class in fastapi and is the entry point .
 )
 from fastapi.routing import APIRouter
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from sqlalchemy.util.deprecations import deprecated
 
@@ -22,16 +23,34 @@ models.Base.metadata.create_all(bind=engine)
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=List[schemas.Post])
+@router.get("/", response_model=List[schemas.PostOut])
 def get_posts(
-    db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user) ,
-    limit : int = 10,
-    skip : int = 0,
-    search : Optional[str] = ""
+    db: Session = Depends(get_db),
+    current_user: int = Depends(oauth2.get_current_user),
+    limit: int = 10,
+    skip: int = 0,
+    search: Optional[str] = "",
 ):
     # cursor.execute("SELECT * FROM posts")
     # posts = cursor.fetchall()
-    posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    # posts = (
+    #     db.query(models.Post)
+    #     .filter(models.Post.title.contains(search))
+    #     .limit(limit)
+    #     .offset(skip)
+    #     .all()
+    # )
+    posts = (
+        (
+            db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+            .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+            .group_by(models.Post.id)
+        )
+        .filter(models.Post.title.contains(search))
+        .limit(limit)
+        .offset(skip)
+        .all()
+    )
     return posts
 
 
@@ -62,7 +81,7 @@ def creat_post(
 #         }
 
 
-@router.get("/{id}", response_model=schemas.Post)  # path parameter
+@router.get("/{id}", response_model=schemas.PostOut)  # path parameter
 def get_post(
     id: int,
     db: Session = Depends(get_db),
@@ -70,7 +89,16 @@ def get_post(
 ):
     # cursor.execute("SELECT * FROM posts WHERE id = %s", (id,))
     # post = cursor.fetchone()
-    post = db.query(models.Post).filter(models.Post.id == id).first()
+    # post = db.query(models.Post).filter(models.Post.id == id).first()
+    post = (
+        (
+            db.query(models.Post, func.count(models.Vote.post_id).label("votes"))
+            .join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True)
+            .group_by(models.Post.id)
+        )
+        .filter(models.Post.id == id)
+        .first()
+    )
     if not post:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -78,6 +106,7 @@ def get_post(
         )
         # response.status_code = status.HTTP_404_NOT_FOUND
     # return {"message": f"post with id :{id} was not found "}
+
     return post
 
 

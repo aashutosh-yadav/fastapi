@@ -32,6 +32,14 @@ class Post(PostBase):
         orm_mode = True
 
 
+class PostOut(BaseModel):
+    Post: Post
+    votes: int
+
+    class congif:
+        orm_mode = True
+
+
 class CreateUser(BaseModel):
     email: str
     password: str
@@ -50,19 +58,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     id: int
 
-class Vote(BaseModel): 
-    post_id : int 
-    dir : conint(le=1)
 
-
-
-
-
-
-
-
-
-
-
-
-
+class Vote(BaseModel):
+    post_id: int
+    dir: conint(le=1)
