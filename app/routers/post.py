@@ -11,7 +11,6 @@ from fastapi import (
 from fastapi.routing import APIRouter
 from sqlalchemy import func
 from sqlalchemy.orm import Session
-from sqlalchemy.util.deprecations import deprecated
 
 from app import oauth2
 
